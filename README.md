@@ -1,3 +1,3 @@
 ## Parallel-Programming
 
-Parallel Programming using C++, Cilk and OpenMPI
+Parallel Programming using C++, Cilk and OpenMP
