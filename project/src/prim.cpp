@@ -9,29 +9,25 @@
 
 using namespace std;
 
-///structure of edge
 #define Edge  pair<int,pair<int,int > >
 
-///Edge information Parameter
-set< Edge > discovered_edges;           /// set of discovered_edges of graph
-set< Edge > ::iterator sit;             /// iterator of set
+set< Edge > colored_edges;           // set of discovered_edges of graph
+set< Edge > ::iterator wedge;             // iterator of set
 
-///Graph parameters
-vector<map<int,int> > graph;            ///graph information
-map<int,int> ::iterator it;             ///iterator of edges
+vector<map<int,int> > graph;            //graph 
+map<int,int> ::iterator it;             //iterator over edges
 
-///DSU Parameters
 vector<int> root;                       ///root of subtree
 vector<int> size;                       ///size of subtree
 
-///DFS Paramenter
+// Data structures for Depth first search
 vector<bool> visited;   ///mark visited or not
 map<int,int> mp;
 map<int,int> rmp;
 vector<int> vertices;
 
-/// __make : initiazer for dsu parameters
-void __make(int V){
+/// initialzer function for setting the root and the size before unification
+void init_unification(int V){
 
     root = vector<int>(V);
     size = vector<int>(V);
@@ -43,18 +39,20 @@ void __make(int V){
     }
 }
 
-/// __find : root finder of vertex(u)
-int __find(int u){
+// find the root of a given vertex
+int find_root(int u){
     ///distance doubling technique
     while(u != root[root[u]]){
         u = root[root[u]];
     }
     return u;
 }
-/// __union : unifies vertices u and v
-void __union(int u,int v){
-    int root_u = __find(u); ///find root of u'subtree
-    int root_v = __find(v); ///find root of v'subtree
+
+
+// Unification of two vertexes. Uses the root and size calculated during init_unification()
+void unify(int u,int v){
+    int root_u = find_root(u); 
+    int root_v = find_root(v); 
     if (root_u == root_v)
         return ; 
     if(size[root_u]>size[root_v]){  ///u'subtree is bigger than v'subtree
@@ -65,45 +63,37 @@ void __union(int u,int v){
         size[root_v] += size[root_v];
     }
 }
-///disc_new_edge : insert new edges due to newly discovered vertex
+
+// insert new edges into the the colored_edges vector
 void disc_new_edge(int u){
     for(it=graph[rmp[u]].begin();it!=graph[rmp[u]].end();it++)   ///adjacent edges of rmp[u]
-        discovered_edges.insert({it->second,{u,mp[it->first]}});   ///add its discovered_edges
+        colored_edges.insert({it->second,{u,mp[it->first]}});   
 }
+
 ///add_min_edge : add minimum weight edge
 int  add_min_edge(){
     int u,v,w;
-    if(discovered_edges.size()){
+    if(colored_edges.size()){
         do{
-            sit = discovered_edges.begin();         ///min weight edge
-            u = sit->second.first;                  ///one of endpoint of edge
-            v = sit->second.second;                 ///one of endpoint of edge
-            w = sit->first;                         ///weigh of edge
-            discovered_edges.erase(sit);            ///remove this edge
-        } while(__find(u)==__find(v) and discovered_edges.size()); ///edge connect two different subtree
-       __union(u,v);       ///update dsu
+            wedge = colored_edges.begin();         ///min weight edge
+            u = wedge->second.first;                  ///one of endpoint of edge
+            v = wedge->second.second;                 ///one of endpoint of edge
+            w = wedge->first;                         ///weigh of edge
+            colored_edges.erase(wedge);            ///remove this edge
+        } while(find_root(u)==find_root(v) and colored_edges.size()); ///edge connect two different subtree
+        unify(u,v);       ///unify
         disc_new_edge(u);    ///new discovered_edges due to u
         disc_new_edge(v);    ///new discovered_edges due to v
     }
     return w;
 }
 
-///fexists : check whether file exist or not
 
-inline bool fexists (const std::string& name) {
-    if (FILE *file = fopen(name.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
-        return false;
-    }
-}
-
-///comparision_info : add info for comparision over several algorithm execution time
+///add info for comparision over several algorithm execution time
 void comparision_info(double exe_time){
 
     freopen("../output/time.txt","a+",stdout);
-    printf("%.6f ",exe_time);
+    printf("%.5f ",exe_time);
 
 }
 
@@ -156,19 +146,18 @@ int main(int argc, char ** argv){
 
             vertices.clear();
             dfs(j);
-
             ///rename vertex number
             ///to make independent subgraph
-            mp.clear();
+            mp.clear(); 
             rmp.clear();
             for(int i=0;i<vertices.size();i++){
-                mp[vertices[i]]=i;
-                rmp[i] = vertices[i];
+                mp[vertices[i]]=i; // store the vertex number using index as the vertex content
+                rmp[i] = vertices[i]; // store the vertex into its own index
             }
 
-            __make(vertices.size()); ///DSU Initialization
+            init_unification(vertices.size()); ///DSU Initialization
 
-            discovered_edges.clear(); ///Clear old edge set
+            colored_edges.clear(); ///Clear old edge set
 
             disc_new_edge(0);///add source edges
 

@@ -48,8 +48,8 @@ vector<bool> visited;   ///mark visited or not
 unordered_map<int,int> mp;
 unordered_map<int,int> rmp;
 
-///prepare_sub_tree : initialize sub tree parameters
-void prepare_sub_tree(int V){
+///init_sub_tree : initialize sub tree parameters
+void init_sub_tree(int V){
 
     sub_tree_info = vector<vector<int> >(V);
 
@@ -65,8 +65,8 @@ void prepare_sub_tree(int V){
 
 }
 
-///prepare_dsu : initialize dsu parameters
-void prepare_dsu(int V){
+///init_unify : initialize dsu parameters
+void init_unify(int V){
 
     root = vector<int>(V);
     size = vector<int>(V);
@@ -77,8 +77,8 @@ void prepare_dsu(int V){
     }
 }
 
-///__find : get root of u's subtree
-int __find(int u){
+///find_root : get root of u's subtree
+int find_root(int u){
 
     ///distance doubling technique
     while( u != root[root[u]] ){
@@ -88,11 +88,11 @@ int __find(int u){
     return u;
 }
 
-///__union : unifies subtree using edge e
-int __union(int e){
+///unify : unifies subtree using edge e
+int unify(int e){
 
-    int root_u = __find(mp[edges[e].u]);
-    int root_v = __find(mp[edges[e].v]);
+    int root_u = find_root(mp[edges[e].u]);
+    int root_v = find_root(mp[edges[e].v]);
 
 
     if( root_u != root_v ){ ///edge connecting two subtrees
@@ -147,7 +147,7 @@ int sortPMA(int root_Q){
 
             int e = adj[rmp[u]][i];
 
-            if( __find(mp[edges[e].u]) != __find(mp[edges[e].v])){   ///edge connecting two subtrees
+            if( find_root(mp[edges[e].u]) != find_root(mp[edges[e].v])){   ///edge connecting two subtrees
 
                 if(edges[e].w < minW){  ///found lesser weight edge
 
@@ -226,7 +226,7 @@ long long prim_sortPMA(int V){
         /// Add edges to graph inorder to get MST
         for(int i=0;i<sub_tree_root.size();i++){
 
-            ans += __union(minE[i]);
+            ans += unify(minE[i]);
         }
 
         /// Some of subtree are merged, so remove them from sub_tree_root
@@ -246,15 +246,6 @@ long long prim_sortPMA(int V){
     return ans;
 }
 
-///fexists : check whether file exist or not
-inline bool fexists (const std::string& name) {
-    if (FILE *file = fopen(name.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
-        return false;
-    }
-}
 
 ///comparision_info : add info for comparision over several algorithm execution time
 void comparision_info(double exe_time){
@@ -289,9 +280,6 @@ void dfs(int u,vector<int> &vertices){
 
 int main(int argc,char**argv){
 
-    if(argc>1){
-        THREADS = atoi(argv[1]);
-    }
 
     clock_t runtime = clock();  ///run timer
 
@@ -340,8 +328,8 @@ int main(int argc,char**argv){
             vector<int> vertices;
             dfs(j,vertices);
 
-            prepare_sub_tree(vertices.size());       /// initialization of subtree parameter
-            prepare_dsu(vertices.size());            /// initialization of dsu parameter
+            init_sub_tree(vertices.size());       /// initialization of subtree parameter
+            init_unify(vertices.size());            /// initialization of dsu parameter
 
             ///rename vertex number
             ///to make independent subgraph

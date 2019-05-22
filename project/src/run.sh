@@ -8,18 +8,18 @@ checker(){
     printf "TestCase : $1 / $2\n"                                   #print test case number
 
 
-    printf 'Generating general graph...\n'
-    g++ -std=c++11 graph_generation.cpp -o graph_generation         #generate general graph
-    ./graph_generation
+   printf 'Generating general graph...\n'
+   g++ -std=c++11 graph_generation.cpp -o graph_generation         #generate general graph
+   ./graph_generation
 
 
-    printf 'Convert to simple graph...\n'
-    g++ -std=c++11 graph_simplify.cpp -o graph_simplify             #convert to simple graph
-    ./graph_simplify
+   printf 'Convert to a format which can be given as input...\n'
+   g++ -std=c++11 graph_simplify.cpp -o graph_simplify             #convert to simple graph
+   ./graph_simplify
 
 
-    cat general_graph.txt
-    cat  simple_graph.txt
+   # cat general_graph.txt
+   # cat  simple_graph.txt
 
 
     printf 'Running Prim’s Algo...\n'
@@ -56,7 +56,7 @@ checker(){
          cmp -s ../output/prim.txt ../output/prim_hybridPMA.txt
                                                                         # match output of different algorithm
     then
-       printf "Verdict : AC\n"
+       printf "All the graphs input and output are different\n"
     else
        printf "Verdict : WA\n"
        exit
@@ -78,7 +78,7 @@ sorter (){
 #drawer : graph ploting
 drawer(){
 
-    printf "Draw graph\n"
+    printf "Drawing a plot to compare run times......Saving it to output/plot.png\n"
     python graph.py
 }
 

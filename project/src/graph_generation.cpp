@@ -21,19 +21,19 @@ using namespace std;
 int root[MaxV+1];
 int size[MaxV+1];
 
-/// __find : get root of u'subtree
-int __find(int u){
+/// find_root : get root of u'subtree
+int find_root(int u){
     while(u != root[root[u]]){
         u = root[root[u]];
     }
     return u;
 }
 
-///__union : add edge to graph
-void __union(int u,int v){
+///unify : add edge to graph
+void unify(int u,int v){
 
-    int root_u = __find(u);     ///root of u's subtree
-    int root_v = __find(v);     ///root of v's subtree
+    int root_u = find_root(u);     ///root of u's subtree
+    int root_v = find_root(v);     ///root of v's subtree
 
     if(size[root_u]>size[root_v]){
 
@@ -48,8 +48,8 @@ void __union(int u,int v){
 
 }
 
-///__make : DSU parameter intialization
-void __make(int V){
+///init_unify : DSU parameter intialization
+void init_unify(int V){
 
     for(int i=0;i<V;i++){
 
@@ -66,12 +66,12 @@ int connected_graph(int i,int V){
         int v = rand()%V;
         int w = 1+rand()%MaxW;
 
-        if(__find(u) == __find(v)){
+        if(find_root(u) == find_root(v)){
             ////Edge in same component
             continue;
         }
         printf("%d %d %d\n",u,v,w);
-        __union(u,v);
+        unify(u,v);
         ++i;
     }
     return i;
@@ -88,7 +88,7 @@ int main(){
 
     printf("G = (V -> %d , E -> %d)\n",V,E);
 
-    __make(V);  ///DSU parameter intialization
+    init_unify(V);  ///DSU parameter intialization
 
 
     freopen("../input/general_graph.txt","w",stdout); ///write graph into file

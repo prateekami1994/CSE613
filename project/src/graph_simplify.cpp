@@ -6,27 +6,27 @@
 
 using namespace std;
 
-set<pair<int,int> > print_once;     ///keep track of printed edges
+set<pair<int,int> > omitted_edges;     ///keep track of printed edges
 
 vector<map<int,int> > graph;        ///adjacency list
 map<int,int> ::iterator it;         ///map iterator
 
 
-///printer : print graph edges
-int printer(int u,int v,int w,bool flag=true){
+///omit_to_file : print graph edges
+int omit_to_file(int u,int v,int w,bool flag=true){
 
-    if( print_once.find(make_pair(u,v))!=print_once.end() ||
+    if( omitted_edges.find(make_pair(u,v))!=omitted_edges.end() ||
 
-        print_once.find(make_pair(v,u))!=print_once.end()){         ///edge is already printed
+        omitted_edges.find(make_pair(v,u))!=omitted_edges.end()){         ///edge is already printed
 
             return 0;
     }else{                                                          ///edge is not already printed
 
-        if(flag){                                                   ///called by printer function to print edge
+        if(flag){                                                   ///called by omit_to_file function to print edge
             printf("%d %d %d\n", u, v, w);
         }
 
-        print_once.insert(make_pair(u,v));                          ///keep track of printed edges
+        omitted_edges.insert(make_pair(u,v));                          ///keep track of printed edges
 
         return 1;
     }
@@ -36,18 +36,18 @@ int printer(int u,int v,int w,bool flag=true){
 int count_edges(int V){
 
     int num_edges = 0;      ///number of edges
-    print_once.clear();     ///clear print once set
+    omitted_edges.clear();     ///clear print once set
 
 
     for(int u=0;u<V;u++){                                   ///traverse vertices
 
         for(it=graph[u].begin();it!=graph[u].end();++it){   ///adjcent edges of u
 
-            num_edges+= printer(u,it->first,it->second,false);
+            num_edges+= omit_to_file(u,it->first,it->second,false);
 
         }
     }
-    print_once.clear();     ///clear print once set
+    omitted_edges.clear();     ///clear print once set
 
     return num_edges;
 
@@ -133,7 +133,7 @@ int main(){
 
         for(it = graph[i].begin();it!=graph[i].end();++it){
 
-            printer(i,it->first,it->second);
+            omit_to_file(i,it->first,it->second);
         }
     }
 
